@@ -55,7 +55,6 @@ public class OrderService {
 		Order order = Order.builder()
 						.number(createOrderNumber())
 						.productName(requestProduct.getProductName())
-						.orderDate(new Date())
 						.userNumber(userNumber)
 						.build();
 		

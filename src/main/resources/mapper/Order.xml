@@ -53,7 +53,7 @@
 		VALUES(
 			#{number},
 			#{productName},
-			#{orderDate},
+			NOW(),
 			#{userNumber}
 		)
 	</insert>
