@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="spring.cloud.order.mapper.OrderMapper">
+		
+	<select id="getLastOrderByUser" parameterType="java.util.List" resultType="spring.cloud.order.entity.Order">
+		SELECT
+			number,
+			product_name,
+			order_date,
+			user_number
+		FROM(
+			SELECT 
+				number,
+				product_name,
+				order_date,
+				user_number,
+				ROW_NUMBER() OVER(PARTITION BY user_number ORDER BY order_date DESC) AS lastOrder
+			FROM idus_order
+			<if test="list.size != 0 || list != null">
+	     		WHERE user_number IN
+		    	<foreach collection="list" item="userNumber" separator="," open="(" close=")">
+		           	#{userNumber}
+				</foreach>
+			</if>
+		) AS lastOrders
+		WHERE lastOrder = 1;
+	</select>
+	
+	<select id="getOrderCountByUser" parameterType="Long" resultType="Long">
+		SELECT COUNT(number)
+		FROM idus_order
+		WHERE user_number = #{userNumber}
+	</select>
+	
+	<select id="getOrderListByUser" resultType="spring.cloud.order.entity.Order">
+		SELECT
+			number,
+			product_name,
+			order_date,
+			user_number
+		FROM idus_order
+		WHERE user_number = #{userNumber}
+		LIMIT ${pagination.startRowNum}, #{pagination.pageRowNum};			
+	</select>
+	
+	<insert id="orderProductByUser" parameterType="spring.cloud.order.entity.Order">
+		INSERT INTO idus_order(
+			number,
+			product_name,
+			order_date,
+			user_number
+		)
+		VALUES(
+			#{number},
+			#{productName},
+			#{orderDate},
+			#{userNumber}
+		)
+	</insert>
+</mapper>

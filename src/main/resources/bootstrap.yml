@@ -1,0 +1,8 @@
+spring:
+  profiles:
+    active: dev
+  application:
+    name: order
+  cloud:
+    config:
+      uri: http://lcj0821.synology.me:8088/
